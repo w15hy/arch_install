@@ -80,16 +80,32 @@ HOSTS
 # Generar initramfs
 mkinitcpio -P
 
+# Sudoers
+sed -i '0,/# %wheel/s//%wheel/' /etc/sudoers
+
+# GRUB CONFIGURATION
 pacman -S grub efibootmgr --noconfirm
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch --removable
+
+sed -i 's/GRUB_TIMEOUT=5/\
+#Configuration to not show the grub\
+GRUB_TIMEOUT=0 # GRUB_TIMEOUT=5 was the original value/' /etc/default/grub
+
+sed -i "GRUB_TIMEOUT=0/a\
+GRUB_HIDDEN_TIMEOUT=0 # Comment this line if you dont want it\
+" /etc/default/grub
+
 grub-mkconfig -o /boot/grub/grub.cfg
 
+# Enable networkmanager
 systemctl enable NetworkManager
 
 passwd root <<PAS
 ${PASSWD}
 ${PASSWD}
 PAS
+
+pacman -S neovim --noconfirm
 
 EOF
 
