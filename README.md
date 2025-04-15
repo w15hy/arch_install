@@ -1,0 +1,1 @@
+"poner control x o control c para copiar toda una linea o quitar toda una linea"
