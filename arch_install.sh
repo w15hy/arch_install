@@ -85,8 +85,8 @@ pacman -Syu --noconfirm
 # Entrar al sistema montado
 arch-chroot /mnt <<EOF
 ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
+timedatectl set-timezone ${TIMEZONE}
 hwclock --systohc
-timedatectl set-ntp true
 
 # Configuracion de hostname y hosts
 echo "${HOSTNAME}" > /etc/hostname
@@ -94,8 +94,14 @@ echo "${HOSTNAME}" > /etc/hostname
 # Generar initramfs
 mkinitcpio -P
 
-# Packages
-pacman -S grub efibootmgr xdg-user-dirs neovim git man python net-tools ly amd-ucode xf86-input-libinput tlp tlp-rdw powertop acpi --noconfirm
+# Install packages
+pacman -S grub efibootmgr xdg-user-dirs neovim git man python net-tools ly amd-ucode xf86-input-libinput tlp tlp-rdw powertop acpi ntp --noconfirm
+pacman -S xorg-server xorg-apps xorg-xinit --noconfirm
+pacman -S i3 numlockx --noconfirm
+pacman -S noto-fonts ttf-ubuntu-font-family ttf-dejavu ttf-freefont --noconfirm
+pacman -S ttf-liberation ttf-droid ttf-roboto terminus-font --noconfirm
+pacman -S firefox --noconfirm
+pacman -S bluez bluez-utils  --noconfirm
 
 # GRUB
 pacman -Syu --noconfirm
@@ -113,6 +119,12 @@ systemctl enable tlp
 systemctl mask systemd-rfkill.service
 systemctl mask systemd-rfkill.socket
 systemctl enable fstrim.timer
+systemctl enable ntpd
+systemctl start ntpd
+systemctl enable bluetooth
+
+
+ntpd -qg
 
 # Sudoers
 sed -i '0,/# %wheel/s//%wheel/' /etc/sudoers
@@ -129,13 +141,21 @@ ${PASSWD}
 ${PASSWD}
 PAS
 
-su - w15hy
-
+su - w15hy <<PAS
 xdg-user-dirs-update
+
+mkdir Sources
+cd Sources
+
+git clone https://aur.archlinux.org/paru.git
+cd paru
+makepkg -si --noconfirm
+PAS
+
 EOF
 
 rm -r /etc/default/grub 
-mv ./resources/grub /etc/grub  # poner /mnt en la version final
+mv ./resources/grub mnt/etc/grub  
 
 arch-chroot /mnt <<EOF
 grub-mkconfig -o /boot/grub/grub.cfg
