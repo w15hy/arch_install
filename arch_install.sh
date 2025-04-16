@@ -104,54 +104,9 @@ awk '
 { print }
 ' /etc/pacman.conf > tmp && mv tmp /etc/pacman.conf
 
-# Instalar paquetes adicionales
-pacman -Sy --noconfirm
-pacman -S neovim net-tools ly xdg-user-dirs git amd-ucode networkmanager xf86-input-libinput mkinitcpio bluez bluez-utils blueman --noconfirm
-systemctl enable ly.service
-systemctl enable bluetooth
+pacman -Syu --noconfirm
 
-pacman -S tlp tlp-rdw powertop acpi --noconfirm
-systemctl enable tlp
-systemctl enable tlp-sleep
-systemctl mask systemd-rfkill.service
-systemctl mask systemd-rfkill.socket
 
-systemctl enable fstrim.timer
-
-pacman -S ntp --noconfirm 
-systemctl enable ntpd
-systemctl start ntpd
-
-pacman -S xorg-server xorg-apps xorg-xinit --noconfirm
-pacman -S i3-gaps i3blocks i3lock numlockx --noconfirm
-
-pacman -S noto-fonts ttf-ubuntu-font-family ttf-dejavu ttf-freefont --noconfirm
-pacman -S ttf-liberation ttf-droid ttf-roboto terminus-font --noconfirm
-pacman -S firefox ----noconfirm
-
-passwd root <<PAS
-${PASSWDROOT}
-${PASSWDROOT}
-PAS
-
-useradd -m -g users -G wheel,storage,power,audio w15hy
-passwd w15hy <<PAS
-${PASSWD}
-${PASSWD}
-PAS
-
-su - w15hy <<PAS
-${PASSWD}
-PAS
-
-xdg-user-dirs-update
-
-mkdir Sources
-cd Sources 
-
-git clone https://aur.archlinux.org/paru.git
-cd paru
-makepkg -si --noconfirm
 
 EOF
 
