@@ -66,6 +66,11 @@ pacman -Sy --noconfirm
 pacman -S rsync --noconfirm
 reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
 
+# Configuration de pacman
+rm -r /etc/pacman.conf
+mv ./resources/pacman.conf /etc/pacman.conf # poner /mnt en la version final
+pacman -Syu --noconfirm
+
 # Instalar componentes basicos
 pacstrap -K /mnt base base-devel linux-zen linux-zen-headers linux-firmware
 
@@ -89,16 +94,26 @@ echo "${HOSTNAME}" > /etc/hostname
 # Generar initramfs
 mkinitcpio -P
 
+# Packages
+pacman -S grub efibootmgr xdg-user-dirs neovim git man python net-tools ly amd-ucode xf86-input-libinput tlp tlp-rdw powertop acpi --noconfirm
+
 # GRUB
 pacman -Syu --noconfirm
-pacman -S grub efibootmgr xdg-user-dirs neovim git man python net-tools --noconfirm
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch --removable
 grub-mkconfig -o /boot/grub/grub.cfg
 
-# Habilitar networkmanager
+# Networkmanager
 pacman -Sy --noconfirm
 pacman -S networkmanager --noconfirm
+
+# Enable services and masking
+systemctl enable ly.service
 systemctl enable NetworkManager
+systemctl enable tlp
+systemctl enable tlp-sleep
+systemctl mask systemd-rfkill.service
+systemctl mask systemd-rfkill.socket
+systemctl enable fstrim.timer
 
 # Sudoers
 sed -i '0,/# %wheel/s//%wheel/' /etc/sudoers
@@ -118,9 +133,8 @@ PAS
 su - w15hy
 
 xdg-user-dirs-update
-
-
-
 EOF
 
-# # falta instalar bluez bluez-utils umount y pacman config
+rm -r /etc/default/grub 
+mv ./resources/grub /etc/grub  # poner /mnt en la version final
+
