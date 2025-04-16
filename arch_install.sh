@@ -16,6 +16,7 @@ do
     read -s -p "Insert your password for user: " PASSWD;
     echo
     read -s -p "Insert your password for user [AGAIN]: " PASSWDAGAIN;
+    echo
     if [ "$PASSWD" != $PASSWDAGAIN ]; then
         unset PASSWD
         echo "The password is different please check it"
@@ -27,6 +28,7 @@ do
     read -s -p "Insert your password for root: " PASSWDROOT;
     echo
     read -s -p "Insert your password for root [AGAIN]: " PASSWDAGAIN;
+    echo
     if [ "$PASSWDROOT" != $PASSWDAGAIN ]; then
         unset PASSWDROOT
         echo "The password is different please check it"
@@ -73,7 +75,7 @@ genfstab -p /mnt >> /mnt/etc/fstab
 # Configurar /etc/hosts
 sed -i 's/HOSTNAME/${HOSTNAME}/g' ./resources/hosts
 rm -r /mnt/etc/hosts
-mv ./resources/hosts mnt/etc/hosts
+mv ./resources/hosts /mnt/etc/hosts
 
 # Entrar al sistema montado
 arch-chroot /mnt <<EOF
