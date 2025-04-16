@@ -12,7 +12,7 @@ HOSTNAME=$2
 PASSWD=$3
 PASSWDROOT=$4
 
-if ! lsblk | grep -q "/mnt"; then
+if lsblk | grep -q "/mnt"; then
     umount /mnt /mnt/boot
     swapoff "$TARGET_DISK"2
 fi
