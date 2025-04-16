@@ -13,7 +13,8 @@ PASSWD=$3
 PASSWDROOT=$4
 
 if lsblk | grep -q "/mnt"; then
-    umount /mnt /mnt/boot
+    umount /mnt/boot
+    umount /mnt
     swapoff "$TARGET_DISK"2
 fi
 
