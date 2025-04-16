@@ -105,6 +105,7 @@ awk '
 ' /etc/pacman.conf > tmp && mv tmp /etc/pacman.conf
 
 # Instalar paquetes adicionales
+pacman -Sy --noconfirm
 pacman -S neovim net-tools ly xdg-user-dirs git amd-ucode networkmanager xf86-input-libinput mkinitcpio bluez bluez-utils blueman --noconfirm
 systemctl enable ly.service
 systemctl enable bluetooth
