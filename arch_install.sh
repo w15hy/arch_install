@@ -14,11 +14,13 @@ HOSTNAME=$2
 while [ -z "$PASSWD" ]
 do
     read -s -p "Insert your password for user: " PASSWD;
+    echo
 done
 
 while [ -z "$PASSWDROOT" ] 
 do
     read -s -p "Insert your password for root: " PASSWDROOT;
+    echo
 done
 
 if [ -z "$TIMEZONE" ] || [ -z "$HOSTNAME" ]; then
