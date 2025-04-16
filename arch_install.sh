@@ -4,7 +4,6 @@ echo "--------------------------------------------------------------------------
 echo "Instalation of Arch Linux"
 echo "--------------------------------------------------------------------------------------------------------"
 
-
 # Config
 TARGET_DISK='/dev/sda'
 # FONT='ter-132b'
@@ -12,6 +11,11 @@ TIMEZONE=$1
 HOSTNAME=$2
 PASSWD=$3
 PASSWDROOT=$4
+
+if ! lsblk | grep -q "/mnt"; then
+    umount /mnt /mnt/boot
+    swapoff "$TARGET_DISK"2
+fi
 
 setfont "$FONT"
 timedatectl set-timezone "$TIMEZONE"
