@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo "--------------------------------------------------------------------------------------------------------"
 echo "Instalation of Arch Linux"
 echo "--------------------------------------------------------------------------------------------------------"
@@ -9,6 +11,7 @@ TARGET_DISK='/dev/sda'
 TIMEZONE=$1 
 HOSTNAME=$2
 PASSWD=$3
+PASSWDROOT=$4
 
 setfont "$FONT"
 timedatectl set-timezone "$TIMEZONE"
@@ -61,6 +64,7 @@ arch-chroot /mnt <<EOF
 # Configurar zona horaria
 ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
 hwclock --systohc
+timedatectl set-ntp true
 
 # Instalar y habilitar NTP
 pacman -S --noconfirm ntp
@@ -87,27 +91,82 @@ sed -i '0,/# %wheel/s//%wheel/' /etc/sudoers
 pacman -S grub efibootmgr --noconfirm
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch --removable
 
-sed -i 's/GRUB_TIMEOUT=5/\
-#Configuration to not show the grub\
-GRUB_TIMEOUT=0 # GRUB_TIMEOUT=5 was the original value/' /etc/default/grub
-
-sed -i "GRUB_TIMEOUT=0/a\
-GRUB_HIDDEN_TIMEOUT=0 # Comment this line if you dont want it\
-" /etc/default/grub
+sed -i '
+s/^GRUB_TIMEOUT=5/# Configuration to not show the GRUB\nGRUB_TIMEOUT=0 # GRUB_TIMEOUT=5 was the original value/
+ /GRUB_TIMEOUT=0/a\
+GRUB_HIDDEN_TIMEOUT=0 # Comment if you dont want it\n' /etc/default/grub
 
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Enable networkmanager
 systemctl enable NetworkManager
 
+# Pacman configuration
+sed -i 's/#Color/Color/' /etc/pacman.conf
+sed -i '/Color/a\ILoveCandy' /etc/pacman.conf
+sed -i 's/#VerbosePkgLists/VerbosePkgLists/' /etc/pacman.conf
+sed -i 's/ParallelDownloads = 5/ParallelDownloads = 10/' /etc/pacman.conf
+sed -i 's/#\[multilib\]/[multilib]/' /etc/pacman.conf
+
+awk '
+/^#Include = \/etc\/pacman.d\/mirrorlist/ {
+    count++
+    if (count == 4) {
+        sub(/^#/, "")
+    }
+}
+{ print }
+' /etc/pacman.conf > tmp && mv tmp /etc/pacman.conf
+
+pacman -S neovim net-tools ly xdg-user-dirs git --noconfirm
+systemctl enable ly.service
+
+pacman -S bluez bluez-utils blueman --noconfirm
+systemctl enable bluetooth
+
+pacman -S tlp tlp-rdw powertop acpi --noconfirm
+systemctl enable tlp
+systemctl enable tlp-sleep
+systemctl mask systemd-rfkill.service
+systemctl mask systemd-rfkill.socket
+
+systemctl enable fstrim.timer
+
+pacman -S xorg-server xorg-apps xorg-xinit --noconfirm
+pacman -S i3-gaps i3blocks i3lock numlockx --noconfirm
+
+pacman -S noto-fonts ttf-ubuntu-font-family ttf-dejavu ttf-freefont --noconfirm
+pacman -S ttf-liberation ttf-droid ttf-roboto terminus-font --noconfirm
+pacman -S firefox ----noconfirm
+
 passwd root <<PAS
+${PASSWDROOT}
+${PASSWDROOT}
+PAS
+
+useradd -m -g users -G wheel,storage,power,audio w15hy
+passwd w15hy <<PAS
 ${PASSWD}
 ${PASSWD}
 PAS
 
-pacman -S neovim --noconfirm
+su - w15hy <<PAS
+${PASSWD}
+PAS
+
+xdg-user-dirs-update
+
+mkdir Sources
+cd Sources 
+
+git clone https://aur.archlinux.org/paru.git
+cd paru
+makepkg -si
+
+
+
 
 EOF
 
-# # falta instalar neovim bluez bluez-utils
+# # falta instalar bluez bluez-utils umount y pacman config
 
