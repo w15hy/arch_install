@@ -11,6 +11,16 @@ TARGET_DISK='/dev/sda'
 TIMEZONE=$1
 HOSTNAME=$2
 
+while [ -z "$PASSWD" ]
+do
+    read -s -p "Insert your password for user: " PASSWD;
+done
+
+while [ -z "$PASSWDROOT" ] 
+do
+    read -s -p "Insert your password for root: " PASSWDROOT;
+done
+
 if [ -z "$TIMEZONE" ] || [ -z "$HOSTNAME" ]; then
     echo "Faltan parámetros. Uso: $0 <TIMEZONE> <HOSTNAME>"
     exit 1
