@@ -73,7 +73,7 @@ pacstrap -K /mnt base base-devel linux-zen linux-zen-headers linux-firmware
 genfstab -p /mnt >> /mnt/etc/fstab
 
 # Configurar /etc/hosts
-sed -i 's/HOSTNAME/${HOSTNAME}/g' ./resources/hosts
+sed -i "s/HOSTNAME/${HOSTNAME}/g" ./resources/hosts
 rm -r /mnt/etc/hosts
 mv ./resources/hosts /mnt/etc/hosts
 
