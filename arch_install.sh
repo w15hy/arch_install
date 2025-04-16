@@ -91,7 +91,7 @@ mkinitcpio -P
 
 # GRUB
 pacman -Syu --noconfirm
-pacman -S grub efibootmgr xdg-user-dirs --noconfirm
+pacman -S grub efibootmgr xdg-user-dirs neovim git man python net-tools --noconfirm
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch --removable
 grub-mkconfig -o /boot/grub/grub.cfg
 
@@ -99,6 +99,9 @@ grub-mkconfig -o /boot/grub/grub.cfg
 pacman -Sy --noconfirm
 pacman -S networkmanager --noconfirm
 systemctl enable NetworkManager
+
+# Sudoers
+sed -i '0,/# %wheel/s//%wheel/' /etc/sudoers
 
 # PASWORD ROOT AND USER 
 passwd root <<PAS
@@ -112,7 +115,11 @@ ${PASSWD}
 ${PASSWD}
 PAS
 
+su - w15hy
+
 xdg-user-dirs-update
+
+
 
 EOF
 
