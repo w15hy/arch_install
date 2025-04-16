@@ -66,11 +66,6 @@ pacman -Sy --noconfirm
 pacman -S rsync --noconfirm
 reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
 
-# Configuration de pacman
-rm -r /etc/pacman.conf
-mv ./resources/pacman.conf /etc/pacman.conf # poner /mnt en la version final
-pacman -Syu --noconfirm
-
 # Instalar componentes basicos
 pacstrap -K /mnt base base-devel linux-zen linux-zen-headers linux-firmware
 
@@ -81,6 +76,11 @@ genfstab -p /mnt >> /mnt/etc/fstab
 sed -i "s/HOSTNAME/${HOSTNAME}/g" ./resources/hosts
 rm -r /mnt/etc/hosts
 mv ./resources/hosts /mnt/etc/hosts
+
+# Configuration de pacman
+rm -r /etc/pacman.conf
+mv ./resources/pacman.conf /mnt/etc/pacman.conf l
+pacman -Syu --noconfirm
 
 # Entrar al sistema montado
 arch-chroot /mnt <<EOF
@@ -110,7 +110,6 @@ pacman -S networkmanager --noconfirm
 systemctl enable ly.service
 systemctl enable NetworkManager
 systemctl enable tlp
-systemctl enable tlp-sleep
 systemctl mask systemd-rfkill.service
 systemctl mask systemd-rfkill.socket
 systemctl enable fstrim.timer
@@ -137,4 +136,8 @@ EOF
 
 rm -r /etc/default/grub 
 mv ./resources/grub /etc/grub  # poner /mnt en la version final
+
+arch-chroot /mnt <<EOF
+grub-mkconfig -o /boot/grub/grub.cfg
+EOF
 
