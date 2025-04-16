@@ -79,7 +79,7 @@ mv ./resources/hosts /mnt/etc/hosts
 
 # Configuration de pacman
 rm -r /etc/pacman.conf
-mv ./resources/pacman.conf /mnt/etc/pacman.conf l
+mv ./resources/pacman.conf /mnt/etc/pacman.conf
 pacman -Syu --noconfirm
 
 # Entrar al sistema montado
