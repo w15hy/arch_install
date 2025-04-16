@@ -15,12 +15,22 @@ while [ -z "$PASSWD" ]
 do
     read -s -p "Insert your password for user: " PASSWD;
     echo
+    read -s -p "Insert your password for user [AGAIN]: " PASSWDAGAIN;
+    if [ "$PASSWD" != $PASSWDAGAIN ]; then
+        unset PASSWD
+        echo "The password is different please check it"
+    fi
 done
 
 while [ -z "$PASSWDROOT" ] 
 do
     read -s -p "Insert your password for root: " PASSWDROOT;
     echo
+    read -s -p "Insert your password for root [AGAIN]: " PASSWDAGAIN;
+    if [ "$PASSWDROOT" != $PASSWDAGAIN ]; then
+        unset PASSWDROOT
+        echo "The password is different please check it"
+    fi
 done
 
 if [ -z "$TIMEZONE" ] || [ -z "$HOSTNAME" ]; then
@@ -60,6 +70,11 @@ pacstrap -K /mnt base base-devel linux-zen linux-zen-headers linux-firmware
 # Fstab
 genfstab -p /mnt >> /mnt/etc/fstab
 
+# Configurar /etc/hosts
+sed -i 's/HOSTNAME/${HOSTNAME}/g' ./resources/hosts
+rm -r /mnt/etc/hosts
+mv ./resources/hosts mnt/etc/hosts
+
 # Entrar al sistema montado
 arch-chroot /mnt <<EOF
 ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
@@ -68,11 +83,6 @@ timedatectl set-ntp true
 
 # Configuracion de hostname y hosts
 echo "${HOSTNAME}" > /etc/hostname
-
-# Configurar /etc/hosts
-sed 's/HOSTNAME/${HOSTNAME}' ./resources/hosts
-rm -r /etc/hosts
-mv ./resources/hosts /etc/hosts
 
 # Generar initramfs
 mkinitcpio -P
@@ -85,7 +95,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 # Habilitar networkmanager
 pacman -Sy --noconfirm
-pacman -S networkmanager
+pacman -S networkmanager --noconfirm
 systemctl enable NetworkManager
 
 # PASWORD ROOT AND USER 
@@ -94,7 +104,7 @@ ${PASSWDROOT}
 ${PASSWDROOT}
 PAS
 
-useradd -m -g users -G wheel,storage,power,audio w15hy
+useradd -m -g users -G wheel,storage,power,audio w15hy # cambiar w15hy por un input
 passwd w15hy <<PAS
 ${PASSWD}
 ${PASSWD}
