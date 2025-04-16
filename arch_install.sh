@@ -10,11 +10,9 @@ echo "--------------------------------------------------------------------------
 TARGET_DISK='/dev/sda'
 TIMEZONE=$1
 HOSTNAME=$2
-PASSWD=$3
-PASSWDROOT=$4
 
-if [ -z "$TIMEZONE" ] || [ -z "$HOSTNAME" ] || [ -z "$PASSWD" ] || [ -z "$PASSWDROOT" ]; then
-    echo "Faltan parámetros. Uso: $0 <TIMEZONE> <HOSTNAME> <PASSWD> <PASSWDROOT>"
+if [ -z "$TIMEZONE" ] || [ -z "$HOSTNAME" ]; then
+    echo "Faltan parámetros. Uso: $0 <TIMEZONE> <HOSTNAME>"
     exit 1
 fi
 
@@ -60,53 +58,37 @@ timedatectl set-ntp true
 echo "${HOSTNAME}" > /etc/hostname
 
 # Configurar /etc/hosts
-cat <<HOSTS > /etc/hosts
-127.0.0.1       localhost
-::1             localhost
-127.0.1.1       ${HOSTNAME}.localdomain ${HOSTNAME}
-HOSTS
+sed 's/HOSTNAME/${HOSTNAME}' ./resources/hosts
+rm -r /etc/hosts
+mv ./resources/hosts /etc/hosts
 
 # Generar initramfs
 mkinitcpio -P
 
-# Sudoers
-sed -i '0,/# %wheel/s//%wheel/' /etc/sudoers
-
 # GRUB
 pacman -Syu --noconfirm
-pacman -S grub efibootmgr --noconfirm
+pacman -S grub efibootmgr xdg-user-dirs --noconfirm
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Arch --removable
-
-sed -i '
-s/^GRUB_TIMEOUT=5/# Configuration to not show the GRUB\nGRUB_TIMEOUT=0 # GRUB_TIMEOUT=5 was the original value/
- /GRUB_TIMEOUT=0/a\
-GRUB_HIDDEN_TIMEOUT=0 # Comment if you dont want it\n' /etc/default/grub
-
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Habilitar networkmanager
+pacman -Sy --noconfirm
+pacman -S networkmanager
 systemctl enable NetworkManager
 
-# Configuration de pacman
-sed -i 's/#Color/Color/' /etc/pacman.conf
-sed -i '/Color/a\ILoveCandy' /etc/pacman.conf
-sed -i 's/#VerbosePkgLists/VerbosePkgLists/' /etc/pacman.conf
-sed -i 's/ParallelDownloads = 5/ParallelDownloads = 10/' /etc/pacman.conf
-sed -i 's/#\[multilib\]/[multilib]/' /etc/pacman.conf
+# PASWORD ROOT AND USER 
+passwd root <<PAS
+${PASSWDROOT}
+${PASSWDROOT}
+PAS
 
-awk '
-/^#Include = \/etc\/pacman.d\/mirrorlist/ {
-    count++
-    if (count == 4) {
-        sub(/^#/, "")
-    }
-}
-{ print }
-' /etc/pacman.conf > tmp && mv tmp /etc/pacman.conf
+useradd -m -g users -G wheel,storage,power,audio w15hy
+passwd w15hy <<PAS
+${PASSWD}
+${PASSWD}
+PAS
 
-pacman -Syu --noconfirm
-
-
+xdg-user-dirs-update
 
 EOF
 
