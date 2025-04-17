@@ -25,7 +25,7 @@ makepkg -si --noconfirm
 PAS
 
 # Install packages
-pacman -S xorg-server xorg-apps xorg-xinit --noconfirm
+pacman -S xorg-server xorg-apps xorg-xinit kitty --noconfirm
 pacman -S i3 numlockx --noconfirm
 pacman -S noto-fonts ttf-ubuntu-font-family ttf-dejavu ttf-freefont --noconfirm
 pacman -S ttf-liberation ttf-droid ttf-roboto terminus-font --noconfirm
@@ -43,3 +43,5 @@ systemctl enable ntpd
 systemctl start ntpd
 systemctl enable bluetooth
 ntpd -qg
+
+reboot

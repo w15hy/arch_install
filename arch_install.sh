@@ -114,8 +114,8 @@ ${PASSWD}
 PAS
 EOF
 
-rm -r /etc/default/grub 
-mv ./resources/grub /mnt/etc/grub  
+rm -r /mnt/etc/default/grub 
+mv ./resources/grub /mnt/etc/default/grub  
 
 arch-chroot /mnt <<EOF
 grub-mkconfig -o /boot/grub/grub.cfg
