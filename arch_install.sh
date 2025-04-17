@@ -78,7 +78,7 @@ rm -r /mnt/etc/hosts
 mv ./resources/hosts /mnt/etc/hosts
 
 # Configuration de pacman
-rm -r /etc/pacman.conf
+rm -r /mnt/etc/pacman.conf
 mv ./resources/pacman.conf /mnt/etc/pacman.conf
 pacman -Syu --noconfirm
 
