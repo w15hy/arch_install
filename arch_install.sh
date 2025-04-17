@@ -84,7 +84,7 @@ echo "${HOSTNAME}" > /etc/hostname
 mkinitcpio -P
 
 # Install packages
-pacman -S grub efibootmgr xdg-user-dirs --noconfirm
+pacman -S grub efibootmgr xdg-user-dirs neovim --noconfirm
 
 # GRUB
 pacman -Syu --noconfirm
@@ -115,14 +115,15 @@ PAS
 EOF
 
 rm -r /etc/default/grub 
-mv ./resources/grub mnt/etc/grub  
+mv ./resources/grub /mnt/etc/grub  
 
 arch-chroot /mnt <<EOF
 grub-mkconfig -o /boot/grub/grub.cfg
 EOF
 
-chmod +x ./arch_install_2
-mv ./arch_install2 /mnt/home/w15hy/
+chmod +x ./arch_install2.sh
+cd ..
+mv ./arch_install /mnt/root/
 
 reboot
 
