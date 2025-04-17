@@ -63,7 +63,6 @@ swapon "$TARGET_DISK"2
 
 # Actualizar mirrorlist
 pacman -Sy --noconfirm
-pacman -S rsync --noconfirm
 reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
 
 # Instalar componentes basicos
@@ -71,16 +70,6 @@ pacstrap -K /mnt base base-devel linux-zen linux-zen-headers linux-firmware
 
 # Fstab
 genfstab -p /mnt >> /mnt/etc/fstab
-
-# Configurar /etc/hosts
-sed -i "s/HOSTNAME/${HOSTNAME}/g" ./resources/hosts
-rm -r /mnt/etc/hosts
-mv ./resources/hosts /mnt/etc/hosts
-
-# Configuration de pacman
-rm -r /mnt/etc/pacman.conf
-mv ./resources/pacman.conf /mnt/etc/pacman.conf
-pacman -Syu --noconfirm
 
 # Entrar al sistema montado
 arch-chroot /mnt <<EOF
@@ -95,7 +84,7 @@ echo "${HOSTNAME}" > /etc/hostname
 mkinitcpio -P
 
 # Install packages
-pacman -S grub efibootmgr xdg-user-dirs neovim git man --noconfirm
+pacman -S grub efibootmgr xdg-user-dirs --noconfirm
 
 # GRUB
 pacman -Syu --noconfirm
@@ -134,5 +123,7 @@ EOF
 
 chmod +x ./arch_install_2
 mv ./arch_install2 /mnt/home/w15hy/
+
+reboot
 
 
