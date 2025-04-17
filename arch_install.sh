@@ -95,13 +95,7 @@ echo "${HOSTNAME}" > /etc/hostname
 mkinitcpio -P
 
 # Install packages
-pacman -S grub efibootmgr xdg-user-dirs neovim git man python net-tools ly amd-ucode xf86-input-libinput tlp tlp-rdw powertop acpi ntp --noconfirm
-pacman -S xorg-server xorg-apps xorg-xinit --noconfirm
-pacman -S i3 numlockx --noconfirm
-pacman -S noto-fonts ttf-ubuntu-font-family ttf-dejavu ttf-freefont --noconfirm
-pacman -S ttf-liberation ttf-droid ttf-roboto terminus-font --noconfirm
-pacman -S firefox --noconfirm
-pacman -S bluez bluez-utils  --noconfirm
+pacman -S grub efibootmgr xdg-user-dirs neovim git man --noconfirm
 
 # GRUB
 pacman -Syu --noconfirm
@@ -113,18 +107,7 @@ pacman -Sy --noconfirm
 pacman -S networkmanager --noconfirm
 
 # Enable services and masking
-systemctl enable ly.service
 systemctl enable NetworkManager
-systemctl enable tlp
-systemctl mask systemd-rfkill.service
-systemctl mask systemd-rfkill.socket
-systemctl enable fstrim.timer
-systemctl enable ntpd
-systemctl start ntpd
-systemctl enable bluetooth
-
-
-ntpd -qg
 
 # Sudoers
 sed -i '0,/# %wheel/s//%wheel/' /etc/sudoers
@@ -140,18 +123,6 @@ passwd w15hy <<PAS
 ${PASSWD}
 ${PASSWD}
 PAS
-
-su - w15hy <<PAS
-xdg-user-dirs-update
-
-mkdir Sources
-cd Sources
-
-git clone https://aur.archlinux.org/paru.git
-cd paru
-makepkg -si --noconfirm
-PAS
-
 EOF
 
 rm -r /etc/default/grub 
@@ -160,4 +131,8 @@ mv ./resources/grub mnt/etc/grub
 arch-chroot /mnt <<EOF
 grub-mkconfig -o /boot/grub/grub.cfg
 EOF
+
+chmod +x ./arch_install_2
+mv ./arch_install2 /mnt/home/w15hy/
+
 
