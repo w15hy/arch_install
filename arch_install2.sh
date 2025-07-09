@@ -26,19 +26,15 @@ PAS
 
 # Install packages
 pacman -S xorg-server xorg-apps xorg-xinit kitty zsh fzf --noconfirm
-pacman -S i3 numlockx --noconfirm
+pacman -S i3 --noconfirm
 pacman -S noto-fonts ttf-ubuntu-font-family ttf-dejavu ttf-freefont --noconfirm
 pacman -S ttf-liberation ttf-droid ttf-roboto terminus-font --noconfirm
 pacman -S firefox --noconfirm
 pacman -S bluez bluez-utils  --noconfirm
-pacman -S python net-tools ly amd-ucode xf86-input-libinput tlp tlp-rdw powertop acpi neovim git man --noconfirm
+pacman -S python net-tools ly amd-ucode xf86-input-libinput acpi neovim git man --noconfirm
 
 # Habilitar servicios
 systemctl enable ly.service
-systemctl enable tlp
-systemctl mask systemd-rfkill.service
-systemctl mask systemd-rfkill.socket
-systemctl enable fstrim.timer
 systemctl enable bluetooth
 
 chsh -s /bin/zsh w15hy
