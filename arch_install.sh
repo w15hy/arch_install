@@ -7,7 +7,7 @@ echo "Instalation of Arch Linux"
 echo "--------------------------------------------------------------------------------------------------------"
 
 # Configuración
-TARGET_DISK='/dev/sda'
+TARGET_DISK='/dev/nvme0n1'
 TIMEZONE=$1
 HOSTNAME=$2
 
@@ -52,14 +52,14 @@ parted "$TARGET_DISK" mkpart primary linux-swap 501MiB 8693MiB
 parted "$TARGET_DISK" mkpart primary ext4 8693MiB 100%
 
 # Formatear particiones
-mkfs.fat -F 32 "$TARGET_DISK"1
-mkswap "$TARGET_DISK"2
-mkfs.ext4 "$TARGET_DISK"3
+mkfs.fat -F 32 "$TARGET_DISK"p1
+mkswap "$TARGET_DISK"p2
+mkfs.ext4 "$TARGET_DISK"p3
 
 # Montar particiones
-mount "$TARGET_DISK"3 /mnt
-mount --mkdir "$TARGET_DISK"1 /mnt/boot
-swapon "$TARGET_DISK"2 
+mount "$TARGET_DISK"p3 /mnt
+mount --mkdir "$TARGET_DISK"p1 /mnt/boot
+swapon "$TARGET_DISK"p2 
 
 # Actualizar mirrorlist
 pacman -Sy --noconfirm
@@ -126,5 +126,3 @@ cd ..
 mv ./arch_install /mnt/root/
 
 reboot
-
-
