@@ -40,6 +40,4 @@ systemctl enable bluetooth
 chsh -s /bin/zsh w15hy
 chsh -s /bin/zsh root
 
-sed -i 's/x_cmd = \/usr\/bin\/X/x_cmd = \/usr\/bin\/X >\/dev\/null 2\>\&1/' /etc/ly/config.ini
-
 reboot
